@@ -1,0 +1,157 @@
+{
+  "type": "Settings",
+  "audio": {
+    "input": {
+      "encoding": "mulaw",
+      "sample_rate": 8000
+    },
+    "output": {
+      "encoding": "mulaw",
+      "sample_rate": 8000,
+      "container": "none"
+    }
+  },
+  "agent": {
+    "language": "en",
+    "listen": {
+      "provider": {
+        "type": "deepgram",
+        "model": "nova-3",
+        "keyterms": ["appointment", "booking", "cancel", "haircut", "colour", "facial", "manicure", "stylist", "available", "price"]
+      }
+    },
+    "think": {
+      "provider": {
+        "type": "open_ai",
+        "model": "gpt-4o-mini",
+        "temperature": 0.7
+      },
+      "prompt": "You are GlamDesk, a professional and friendly AI receptionist for a premium hair and beauty salon. You can: 1) Book appointments with book_appointment, 2) Check available time slots with get_available_slots, 3) Look up existing appointments with lookup_appointment, 4) Cancel appointments with cancel_appointment, 5) Share service details and prices with get_service_info or list_services, 6) Answer salon FAQs with get_faq. IMPORTANT RULES: Always collect the customer's full name and phone number before booking. Confirm all booking details (service, date, time, stylist) before calling book_appointment. Use 24-hour format for time internally (e.g., 14:00) and date format YYYY-MM-DD. Speak warmly and professionally. If a slot is unavailable, immediately offer alternatives using get_available_slots.",
+      "functions": [
+        {
+          "name": "get_service_info",
+          "description": "Get details (price, duration, description) for a specific salon service. Use when a customer asks about a service like haircut, facial, manicure, highlights, etc.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "service_name": {
+                "type": "string",
+                "description": "Name of the service to look up. Examples: 'haircut', 'facial', 'manicure', 'highlights', 'keratin'"
+              }
+            },
+            "required": ["service_name"]
+          }
+        },
+        {
+          "name": "list_services",
+          "description": "List all available salon services with prices. Use when a customer asks 'what services do you offer?' or 'what are your prices?'",
+          "parameters": {
+            "type": "object",
+            "properties": {}
+          }
+        },
+        {
+          "name": "get_available_slots",
+          "description": "Check available appointment slots for a given date. Use before booking to confirm slot availability or when a customer asks 'what times are available?'",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "date_str": {
+                "type": "string",
+                "description": "Date to check in YYYY-MM-DD format. Example: '2025-06-15'"
+              },
+              "service_name": {
+                "type": "string",
+                "description": "Optional service name to filter slots by duration"
+              }
+            },
+            "required": ["date_str"]
+          }
+        },
+        {
+          "name": "book_appointment",
+          "description": "Book a new appointment for a customer. Use after confirming all details: name, phone, service, date, and time. Always call get_available_slots first to confirm the slot is free.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "customer_name": {
+                "type": "string",
+                "description": "Full name of the customer"
+              },
+              "phone": {
+                "type": "string",
+                "description": "Customer's phone number (10 digits, used as unique identifier)"
+              },
+              "service_name": {
+                "type": "string",
+                "description": "Name of the service to book. Must match a service in the system."
+              },
+              "date_str": {
+                "type": "string",
+                "description": "Appointment date in YYYY-MM-DD format"
+              },
+              "time_str": {
+                "type": "string",
+                "description": "Appointment time in HH:MM 24-hour format, e.g. '14:00'"
+              },
+              "stylist_name": {
+                "type": "string",
+                "description": "Optional preferred stylist name (Priya, Kavitha, Roshini, Deepika)"
+              }
+            },
+            "required": ["customer_name", "phone", "service_name", "date_str", "time_str"]
+          }
+        },
+        {
+          "name": "lookup_appointment",
+          "description": "Look up an existing appointment by its ID. Use when a customer provides an appointment number or asks to check their booking.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "appointment_id": {
+                "type": "integer",
+                "description": "The appointment ID number"
+              }
+            },
+            "required": ["appointment_id"]
+          }
+        },
+        {
+          "name": "cancel_appointment",
+          "description": "Cancel an existing appointment by ID. Always confirm the appointment details with the customer before cancelling.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "appointment_id": {
+                "type": "integer",
+                "description": "The appointment ID to cancel"
+              }
+            },
+            "required": ["appointment_id"]
+          }
+        },
+        {
+          "name": "get_faq",
+          "description": "Answer frequently asked questions about the salon such as hours, location, parking, payment methods, walk-ins, and rescheduling policy.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "topic": {
+                "type": "string",
+                "description": "The topic of the question. Examples: 'hours', 'location', 'parking', 'payment', 'walk-in', 'reschedule'"
+              }
+            },
+            "required": ["topic"]
+          }
+        }
+      ]
+    },
+    "speak": {
+      "provider": {
+        "type": "deepgram",
+        "model": "aura-2-thalia-en"
+      }
+    },
+    "greeting": "Hello, thank you for calling GlamDesk! I'm your AI salon receptionist. I can help you book an appointment, check our services and prices, or answer any questions about our salon. How can I assist you today?"
+  }
+}
