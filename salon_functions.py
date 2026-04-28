@@ -58,6 +58,7 @@ def init_db():
         stylist_id    INTEGER REFERENCES stylists(id),
         appt_datetime DATETIME NOT NULL,
         status        TEXT DEFAULT 'booked',
+        reminder_sent  INTEGER NOT NULL DEFAULT 0,
         notes         TEXT,
         created_at    DATETIME DEFAULT CURRENT_TIMESTAMP
     );
@@ -325,9 +326,43 @@ def lookup_appointment(appointment_id: int) -> dict:
         "duration_min":   row["duration_min"],
     }
 
+# ──────────────────────────────────────────────
+# FUNCTION 5 – lookup_appointment
+# ──────────────────────────────────────────────
+
+def lookup_appointment_by_customer_phoneno(phone_no: str) -> dict:
+    """Look up an appointment by ID and return all details."""
+    conn = get_conn()
+    row = conn.execute("""
+        SELECT a.id, c.name as customer, s.name as service,
+               st.name as stylist, a.appt_datetime, a.status, a.notes,
+               s.price, s.duration_min
+        FROM appointments a
+        JOIN customers c  ON c.id  = a.customer_id
+        JOIN services  s  ON s.id  = a.service_id
+        LEFT JOIN stylists st ON st.id = a.stylist_id
+        WHERE c.phone = ? and a.status='booked'
+    """, (phone_no,)).fetchone()
+    conn.close()
+
+    if not row:
+        return {"error": f"Phone no #{phone_no} not found."}
+
+    dt = datetime.strptime(row["appt_datetime"], "%Y-%m-%d %H:%M")
+    return {
+        "appointment_id": row["id"],
+        "customer":       row["customer"],
+        "service":        row["service"],
+        "stylist":        row["stylist"] or "Not assigned",
+        "date":           dt.strftime("%A, %d %B %Y"),
+        "time":           dt.strftime("%I:%M %p"),
+        "status":         row["status"],
+        "price":          row["price"],
+        "duration_min":   row["duration_min"],
+    }
 
 # ──────────────────────────────────────────────
-# FUNCTION 6 – cancel_appointment
+# FUNCTION 7 – cancel_appointment
 # ──────────────────────────────────────────────
 
 def cancel_appointment(appointment_id: int) -> dict:
@@ -389,6 +424,7 @@ FUNCTION_MAP = {
     "get_available_slots": get_available_slots,
     "book_appointment":    book_appointment,
     "lookup_appointment":  lookup_appointment,
+    "lookup_appointment_by_customer_phoneno":  lookup_appointment_by_customer_phoneno,
     "cancel_appointment":  cancel_appointment,
     "get_faq":             get_faq,
 }

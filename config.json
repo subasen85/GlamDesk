@@ -117,6 +117,20 @@
           }
         },
         {
+          "name": "lookup_appointment_by_customer_phoneno",
+          "description": "Look up an existing appointment by its customer_phoneno. Use when a customer provides an phone number or asks to check their booking.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "phone_no": {
+                "type": "string",
+                "description": "The Customer_phone number"
+              }
+            },
+            "required": ["phone_no"]
+          }
+        },
+        {
           "name": "cancel_appointment",
           "description": "Cancel an existing appointment by ID. Always confirm the appointment details with the customer before cancelling.",
           "parameters": {

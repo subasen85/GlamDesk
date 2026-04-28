@@ -1,0 +1,12 @@
+[project]
+name = "glamdesk"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.136.1",
+    "python-dotenv>=1.2.2",
+    "twilio>=9.10.5",
+    "websockets>=16.0",
+]
