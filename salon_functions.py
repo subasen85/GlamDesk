@@ -75,15 +75,9 @@ def init_db():
         c.executemany(
             "INSERT INTO services(name, duration_min, price, description) VALUES (?,?,?,?)",
             [
-                ("Haircut & Styling",      45,  799.00, "Precision cut and blow-dry finish"),
-                ("Hair Colour (Full)",     120, 2499.00, "Full head colouring with premium dye"),
-                ("Highlights",             90,  1899.00, "Foil highlights – partial or full"),
-                ("Keratin Treatment",      180, 3999.00, "Smoothing treatment for frizz-free hair"),
-                ("Facial – Basic",         60,  999.00, "Deep cleanse, scrub, and moisturise"),
-                ("Facial – Advanced",      90,  1799.00, "Includes serum, massage, and mask"),
-                ("Manicure",               40,  499.00, "Nail shaping, cuticle care, polish"),
-                ("Pedicure",               50,  599.00, "Foot soak, scrub, nail care, polish"),
-                ("Eyebrow Threading",      15,  150.00, "Precise brow shaping with thread"),
+                ("Haircut",      45,  799.00, "Precision cut and blow-dry finish"),
+                ("Shaving",     120, 2499.00, "Full and Clean Shave"),
+                ("Haircut & Shaving",             90,  1899.00, "Precision cut and Full and Clean Shave"),
                 ("Head Massage",           30,  499.00, "Relaxing scalp and shoulder massage"),
             ]
         )
@@ -93,10 +87,10 @@ def init_db():
         c.executemany(
             "INSERT INTO stylists(name, speciality, working_days) VALUES (?,?,?)",
             [
-                ("Priya",    "Hair colour & cuts",    "Mon,Tue,Wed,Thu,Fri,Sat"),
-                ("Kavitha",  "Skincare & facials",    "Tue,Wed,Thu,Fri,Sat"),
-                ("Roshini",  "Nail art & manicure",   "Mon,Wed,Fri,Sat"),
-                ("Deepika",  "Keratin & treatments",  "Mon,Tue,Thu,Fri,Sat"),
+                ("Ram",    "Haircut & Shaving",    "Mon,Wed,Fri,Sun"),
+                ("Ravi",  "Haircut & Shaving",    "Tue,Thu,Sat"),
+                ("Rahul",  "Head Massage",   "Mon,Wed,Fri,Sun"),
+                ("Ramesh",  "Head Massage",  "Tue,Thu,Sat"),
             ]
         )
 
@@ -106,7 +100,7 @@ def init_db():
             "INSERT INTO faqs(question, answer, category) VALUES (?,?,?)",
             [
                 ("What are your working hours?",
-                 "We are open Monday to Saturday, 10 AM to 8 PM. Closed on Sundays.",
+                 "We are open Monday to Sundays, 10 AM to 8 PM.",
                  "hours"),
                 ("Where are you located?",
                  "We are located at 42 Anna Nagar East, Chennai – 600 040, near the roundtana.",

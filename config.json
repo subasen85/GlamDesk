@@ -17,7 +17,7 @@
       "provider": {
         "type": "deepgram",
         "model": "nova-3",
-        "keyterms": ["appointment", "booking", "cancel", "haircut", "colour", "facial", "manicure", "stylist", "available", "price"]
+        "keyterms": ["appointment", "booking", "cancel", "haircut", "shaving", "stylist", "available", "price"]
       }
     },
     "think": {
@@ -30,13 +30,13 @@
       "functions": [
         {
           "name": "get_service_info",
-          "description": "Get details (price, duration, description) for a specific salon service. Use when a customer asks about a service like haircut, facial, manicure, highlights, etc.",
+          "description": "Get details (price, duration, description) for a specific salon service. Use when a customer asks about a service like haircut, shaving, head massage, etc.",
           "parameters": {
             "type": "object",
             "properties": {
               "service_name": {
                 "type": "string",
-                "description": "Name of the service to look up. Examples: 'haircut', 'facial', 'manicure', 'highlights', 'keratin'"
+                "description": "Name of the service to look up. Examples: 'haircut', 'shaving',  'head massage'"
               }
             },
             "required": ["service_name"]
@@ -96,7 +96,7 @@
               },
               "stylist_name": {
                 "type": "string",
-                "description": "Optional preferred stylist name (Priya, Kavitha, Roshini, Deepika)"
+                "description": "Optional preferred stylist name (Ram, Ravi, Rahul, Ramesh)"
               }
             },
             "required": ["customer_name", "phone", "service_name", "date_str", "time_str"]

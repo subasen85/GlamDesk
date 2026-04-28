@@ -10,7 +10,8 @@ tables = cursor.fetchall()
 print("Tables:", tables)
 
 # Example: view data from first table
-table_name = tables[0][0]
+#Tables: [('customers',), ('sqlite_sequence',), ('services',), ('stylists',), ('appointments',), ('faqs',)]
+table_name = tables[4][0]
 print(f"TableName: {table_name}")
 cursor.execute(f"SELECT * FROM {table_name} LIMIT 5;")
 
