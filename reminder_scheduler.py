@@ -120,7 +120,7 @@ def place_outbound_call(customer_phone: str, appointment_id: int,
 
 def run():
     print("🌸 GlamDesk reminder scheduler started")
-    add_reminder_column()
+    #add_reminder_column()
     client_ok = bool(ACCOUNT_SID and AUTH_TOKEN and FROM_NUMBER and SERVER_URL)
     if not client_ok:
         print("⚠️  Twilio env vars missing — calls will be skipped (dry-run mode)")

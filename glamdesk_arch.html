@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>GlamDesk – Architecture Diagram</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #0d0d0d;
+    --card: #161616;
+    --border: #2a2a2a;
+    --gold: #c9a84c;
+    --gold2: #e8c97a;
+    --pink: #e8748a;
+    --blue: #5ba8d6;
+    --green: #6bcba0;
+    --text: #f0ede6;
+    --muted: #888;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.4rem;
+    color: var(--gold2);
+    text-align: center;
+    letter-spacing: 0.02em;
+    margin-bottom: 6px;
+  }
+
+  .tagline {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.8rem;
+    margin-bottom: 48px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .diagram {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* ROWS */
+  .row {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    position: relative;
+  }
+
+  .row + .row {
+    margin-top: 0;
+  }
+
+  /* NODES */
+  .node {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 22px;
+    background: var(--card);
+    position: relative;
+    flex: 1;
+  }
+
+  .node-label {
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .node-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .node-desc {
+    font-size: 0.72rem;
+    color: #aaa;
+    line-height: 1.5;
+  }
+
+  .node-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 8px;
+    font-weight: 500;
+  }
+
+  /* Color accents */
+  .accent-gold  { border-color: var(--gold); }
+  .accent-gold .node-title  { color: var(--gold2); }
+  .accent-gold .node-tag    { background: rgba(201,168,76,0.15); color: var(--gold2); border: 1px solid var(--gold); }
+
+  .accent-pink  { border-color: var(--pink); }
+  .accent-pink .node-title  { color: var(--pink); }
+  .accent-pink .node-tag    { background: rgba(232,116,138,0.12); color: var(--pink); border: 1px solid var(--pink); }
+
+  .accent-blue  { border-color: var(--blue); }
+  .accent-blue .node-title  { color: var(--blue); }
+  .accent-blue .node-tag    { background: rgba(91,168,214,0.12); color: var(--blue); border: 1px solid var(--blue); }
+
+  .accent-green { border-color: var(--green); }
+  .accent-green .node-title { color: var(--green); }
+  .accent-green .node-tag   { background: rgba(107,203,160,0.12); color: var(--green); border: 1px solid var(--green); }
+
+  /* ARROW */
+  .arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 0;
+    position: relative;
+  }
+
+  .arrow-line {
+    width: 2px;
+    background: linear-gradient(to bottom, var(--gold), var(--pink));
+    flex: 1;
+    max-height: 100%;
+    position: absolute;
+    left: 50%;
+    top: 0; bottom: 0;
+    transform: translateX(-50%);
+  }
+
+  .arrow-vert {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 0;
+    width: 100%;
+  }
+
+  .arrow-vert .stem {
+    width: 2px;
+    height: 30px;
+    background: linear-gradient(to bottom, #444, #666);
+  }
+
+  .arrow-vert .head {
+    width: 0; height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 9px solid #666;
+  }
+
+  .arrow-label {
+    font-size: 0.6rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    background: var(--bg);
+    padding: 2px 8px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HORIZONTAL ARROW between nodes */
+  .h-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    flex-shrink: 0;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .h-arrow .h-stem {
+    height: 2px;
+    width: 36px;
+    background: linear-gradient(to right, #444, #666);
+  }
+
+  .h-arrow .h-head {
+    width: 0; height: 0;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 8px solid #666;
+    margin-left: 36px;
+    margin-top: -6px;
+  }
+
+  .h-arrow .h-label {
+    font-size: 0.55rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+
+  /* DB SCHEMA SECTION */
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    color: var(--gold2);
+    text-align: center;
+    margin: 64px 0 32px;
+  }
+
+  .db-grid {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+  }
+
+  .table-card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--card);
+  }
+
+  .table-header {
+    padding: 12px 16px;
+    font-family: 'Playfair Display', serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .table-header.gold  { background: rgba(201,168,76,0.1);  color: var(--gold2); }
+  .table-header.pink  { background: rgba(232,116,138,0.1); color: var(--pink); }
+  .table-header.blue  { background: rgba(91,168,214,0.1);  color: var(--blue); }
+  .table-header.green { background: rgba(107,203,160,0.1); color: var(--green); }
+
+  .table-body { padding: 12px 16px; }
+
+  .col-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    border-bottom: 1px solid #1e1e1e;
+    font-size: 0.72rem;
+  }
+
+  .col-row:last-child { border-bottom: none; }
+
+  .col-name { color: var(--text); }
+  .col-type { color: var(--muted); font-size: 0.65rem; }
+
+  .pk  { color: var(--gold2); font-weight: 600; }
+  .fk  { color: var(--pink); }
+  .idx { color: var(--blue); }
+
+  /* FLOW SECTION */
+  .flow-section {
+    max-width: 1000px;
+    margin: 0 auto 60px;
+  }
+
+  .flow-steps {
+    display: flex;
+    gap: 0;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 120px;
+    text-align: center;
+  }
+
+  .step-circle {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .step-text {
+    font-size: 0.65rem;
+    color: #aaa;
+    line-height: 1.4;
+  }
+
+  .step-connector {
+    width: 40px;
+    height: 2px;
+    background: linear-gradient(to right, #333, #555);
+    align-self: center;
+    margin-bottom: 42px;
+  }
+
+  /* Legend */
+  .legend {
+    max-width: 1000px;
+    margin: 20px auto 0;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.68rem;
+    color: var(--muted);
+  }
+
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+</style>
+</head>
+<body>
+
+<h1>GlamDesk</h1>
+<p class="tagline">AI Salon Receptionist · Architecture & DB Schema</p>
+
+<!-- ====== ARCH DIAGRAM ====== -->
+<div class="diagram">
+
+  <!-- Row 1: Caller -->
+  <div class="row" style="justify-content:center;">
+    <div class="node accent-gold" style="max-width:260px; text-align:center;">
+      <div class="node-label">Input</div>
+      <div class="node-title">📞 Customer Call</div>
+      <div class="node-desc">Customer dials salon number via Twilio phone number</div>
+      <span class="node-tag">Twilio Voice</span>
+    </div>
+  </div>
+
+  <div style="display:flex;justify-content:center;">
+    <div class="arrow-vert"><div class="stem"></div><div class="head"></div></div>
+  </div>
+
+  <!-- Row 2: Twilio -->
+  <div class="row" style="justify-content:center;">
+    <div class="node accent-pink" style="max-width:340px; text-align:center;">
+      <div class="node-label">Telephony Gateway</div>
+      <div class="node-title">Twilio WebSocket Stream</div>
+      <div class="node-desc">Streams μ-law audio (8kHz) bidirectionally. Sends streamSid for media routing.</div>
+      <span class="node-tag">WebSocket · mulaw · 8kHz</span>
+    </div>
+  </div>
+
+  <div style="display:flex;justify-content:center;">
+    <div class="arrow-vert"><div class="stem"></div><div class="head"></div></div>
+  </div>
+
+  <!-- Row 3: main.py server -->
+  <div class="row" style="justify-content:center;">
+    <div class="node accent-blue" style="max-width:400px; text-align:center;">
+      <div class="node-label">Core Server · main.py</div>
+      <div class="node-title">Python WebSocket Server</div>
+      <div class="node-desc">
+        Manages 3 async tasks:<br>
+        <strong>twilio_receiver</strong> → buffers audio<br>
+        <strong>sts_sender</strong> → forwards to Deepgram<br>
+        <strong>sts_receiver</strong> → streams response back + calls functions
+      </div>
+      <span class="node-tag">asyncio · websockets · port 5000</span>
+    </div>
+  </div>
+
+  <div style="display:flex;justify-content:center;gap:160px;">
+    <div class="arrow-vert"><div class="stem" style="height:24px;"></div><div class="head"></div></div>
+    <div class="arrow-vert"><div class="stem" style="height:24px;"></div><div class="head"></div></div>
+  </div>
+
+  <!-- Row 4: Deepgram + Salon Functions -->
+  <div class="row" style="justify-content:center; gap:40px; flex-wrap:wrap;">
+
+    <div class="node accent-blue" style="max-width:260px; text-align:center;">
+      <div class="node-label">Voice AI Engine</div>
+      <div class="node-title">Deepgram Voice Agent</div>
+      <div class="node-desc">
+        STT: nova-3<br>
+        LLM: gpt-4o-mini<br>
+        TTS: aura-2-thalia-en<br>
+        Sends FunctionCallRequest events
+      </div>
+      <span class="node-tag">wss://agent.deepgram.com</span>
+    </div>
+
+    <div class="node accent-green" style="max-width:260px; text-align:center;">
+      <div class="node-label">Business Logic</div>
+      <div class="node-title">salon_functions.py</div>
+      <div class="node-desc">
+        book_appointment()<br>
+        lookup_appointment()<br>
+        cancel_appointment()<br>
+        get_service_info()<br>
+        get_available_slots()
+      </div>
+      <span class="node-tag">FUNCTION_MAP</span>
+    </div>
+
+  </div>
+
+  <div style="display:flex;justify-content:center;margin-left:200px;">
+    <div class="arrow-vert"><div class="stem" style="height:24px;"></div><div class="head"></div></div>
+  </div>
+
+  <!-- Row 5: SQLite DB -->
+  <div class="row" style="justify-content:center;margin-left:200px;">
+    <div class="node accent-green" style="max-width:260px; text-align:center;">
+      <div class="node-label">Persistent Storage</div>
+      <div class="node-title">🗄️ SQLite Database</div>
+      <div class="node-desc">
+        glamdesk.db<br>
+        Tables: customers, services, stylists, appointments, faqs
+      </div>
+      <span class="node-tag">SQLite · glamdesk.db</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ====== CALL FLOW ====== -->
+<div class="section-title">Call Flow</div>
+<div class="flow-section">
+  <div class="flow-steps">
+    <div class="step">
+      <div class="step-circle" style="background:rgba(201,168,76,0.15);color:var(--gold2);border:2px solid var(--gold);">1</div>
+      <div class="step-text">Customer calls Twilio number</div>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step">
+      <div class="step-circle" style="background:rgba(232,116,138,0.15);color:var(--pink);border:2px solid var(--pink);">2</div>
+      <div class="step-text">Twilio streams audio to main.py</div>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step">
+      <div class="step-circle" style="background:rgba(91,168,214,0.15);color:var(--blue);border:2px solid var(--blue);">3</div>
+      <div class="step-text">main.py forwards to Deepgram Agent</div>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step">
+      <div class="step-circle" style="background:rgba(91,168,214,0.15);color:var(--blue);border:2px solid var(--blue);">4</div>
+      <div class="step-text">Deepgram STT → LLM decides action</div>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step">
+      <div class="step-circle" style="background:rgba(107,203,160,0.15);color:var(--green);border:2px solid var(--green);">5</div>
+      <div class="step-text">FunctionCallRequest → salon_functions</div>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step">
+      <div class="step-circle" style="background:rgba(107,203,160,0.15);color:var(--green);border:2px solid var(--green);">6</div>
+      <div class="step-text">SQLite read/write, result returned</div>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step">
+      <div class="step-circle" style="background:rgba(201,168,76,0.15);color:var(--gold2);border:2px solid var(--gold);">7</div>
+      <div class="step-text">TTS audio streamed back to caller</div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== DB SCHEMA ====== -->
+<div class="section-title">Database Schema · glamdesk.db</div>
+
+<div class="db-grid">
+
+  <div class="table-card">
+    <div class="table-header gold">customers</div>
+    <div class="table-body">
+      <div class="col-row"><span class="col-name pk">id</span><span class="col-type">INTEGER PK</span></div>
+      <div class="col-row"><span class="col-name">name</span><span class="col-type">TEXT NOT NULL</span></div>
+      <div class="col-row"><span class="col-name">phone</span><span class="col-type">TEXT UNIQUE</span></div>
+      <div class="col-row"><span class="col-name">email</span><span class="col-type">TEXT</span></div>
+      <div class="col-row"><span class="col-name">created_at</span><span class="col-type">DATETIME</span></div>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-header pink">services</div>
+    <div class="table-body">
+      <div class="col-row"><span class="col-name pk">id</span><span class="col-type">INTEGER PK</span></div>
+      <div class="col-row"><span class="col-name">name</span><span class="col-type">TEXT NOT NULL</span></div>
+      <div class="col-row"><span class="col-name">duration_min</span><span class="col-type">INTEGER</span></div>
+      <div class="col-row"><span class="col-name">price</span><span class="col-type">REAL</span></div>
+      <div class="col-row"><span class="col-name">description</span><span class="col-type">TEXT</span></div>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-header blue">stylists</div>
+    <div class="table-body">
+      <div class="col-row"><span class="col-name pk">id</span><span class="col-type">INTEGER PK</span></div>
+      <div class="col-row"><span class="col-name">name</span><span class="col-type">TEXT NOT NULL</span></div>
+      <div class="col-row"><span class="col-name">speciality</span><span class="col-type">TEXT</span></div>
+      <div class="col-row"><span class="col-name">working_days</span><span class="col-type">TEXT</span></div>
+      <div class="col-row"><span class="col-name">active</span><span class="col-type">INTEGER DEFAULT 1</span></div>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-header green">appointments</div>
+    <div class="table-body">
+      <div class="col-row"><span class="col-name pk">id</span><span class="col-type">INTEGER PK</span></div>
+      <div class="col-row"><span class="col-name fk">customer_id</span><span class="col-type">FK → customers</span></div>
+      <div class="col-row"><span class="col-name fk">service_id</span><span class="col-type">FK → services</span></div>
+      <div class="col-row"><span class="col-name fk">stylist_id</span><span class="col-type">FK → stylists</span></div>
+      <div class="col-row"><span class="col-name">appt_datetime</span><span class="col-type">DATETIME</span></div>
+      <div class="col-row"><span class="col-name">status</span><span class="col-type">TEXT (booked/cancelled)</span></div>
+      <div class="col-row"><span class="col-name">notes</span><span class="col-type">TEXT</span></div>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-header gold">faqs</div>
+    <div class="table-body">
+      <div class="col-row"><span class="col-name pk">id</span><span class="col-type">INTEGER PK</span></div>
+      <div class="col-row"><span class="col-name">question</span><span class="col-type">TEXT NOT NULL</span></div>
+      <div class="col-row"><span class="col-name">answer</span><span class="col-type">TEXT NOT NULL</span></div>
+      <div class="col-row"><span class="col-name">category</span><span class="col-type">TEXT</span></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- legend -->
+<div class="legend" style="margin-top:32px;">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--gold2);"></div>PK – Primary Key</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--pink);"></div>FK – Foreign Key</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--blue);"></div>IDX – Indexed</div>
+</div>
+
+</body>
+</html>
